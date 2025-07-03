@@ -38,10 +38,6 @@ class player_class(game_ob):
         if keys[pygame.K_LEFT]:
             self.x -= speed
     def shot(self,screen,inv_list):
-
-        keys = pygame.key.get_pressed()
-        if keys[pygame.K_SPACE]:
-            self.b_list.append(bolit(self.x,self.y))
         for i in range(len(self.b_list)):
             self.b_list[i].move()
             self.b_list[i].draw(screen,5,5)
@@ -65,7 +61,7 @@ for i in range(100,700,40):
     for j in range (40,300,30):
       invader.append(inv(i,j))
 
-
+font = pygame.font.Font(None, 36)
 
 
 screen = pygame.display.set_mode((WIDTH,HIGHT))
@@ -74,18 +70,22 @@ clock = pygame.time.Clock()
 running = True
 player = player_class(WIDTH/2-40,HIGHT-40)
 while running :
+
     screen.fill("black")
+    text_surface = font.render(f"Remanig invaders is : {len(invader)}", True, (255, 255, 255)) 
+    screen.blit(text_surface, (10, 10))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                    player.b_list.append(bolit(player.x + 20,player.y))
 
 
     player.move(10)
     player.draw(screen,40,20)
-    player.shot(screen,invader)
-
+    player.shot(screen , invader)
     for i in invader :
         i.move(5)
         i.draw(screen,20,20)
