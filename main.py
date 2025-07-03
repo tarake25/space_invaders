@@ -1,7 +1,8 @@
 import pygame 
+import math
 
 pygame.init()
-import math
+
 # screaan settings
 WIDTH = 800
 HIGHT = 600
@@ -45,15 +46,25 @@ class player_class(game_ob):
                 if self.b_list[i].hit(inv_list[j]):
                     inv_list[j].x += 100000
                     self.b_list[i].x+= 100000
-                    
+    def game_over(self,list_inv):
+        for inv in list_inv:
+            if math.sqrt((self.x - inv.x)**2 + (self.y - inv.y)**2) == 10:
+                return True
+
         
 
 class inv(game_ob):
     def __init__(self, x, y):
         super().__init__(x, y)
     def move(self, speed):
-        pass
+        self.x += speed
 
+
+
+
+
+        
+left,right = False,True
 
 
 invader = []
@@ -63,6 +74,7 @@ for i in range(100,700,40):
 
 font = pygame.font.Font(None, 36)
 
+text_2 = font.render("GAME OVER !!", True, (255, 0, 0)) 
 
 screen = pygame.display.set_mode((WIDTH,HIGHT))
 pygame.display.set_caption("space invader")
@@ -81,15 +93,46 @@ while running :
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                     player.b_list.append(bolit(player.x + 20,player.y))
-
+    
+    
+ 
 
     player.move(10)
     player.draw(screen,40,20)
     player.shot(screen , invader)
-    for i in invader :
-        i.move(5)
-        i.draw(screen,20,20)
+
+
+
+    if player.game_over(invader):
+        running = False
+
+    hit_right_edge = any(inv.x + 20 >= WIDTH for inv in invader)
+    hit_left_edge = any(inv.x <= 0 for inv in invader)
+
+    if hit_right_edge:
+        left, right = True, False
+        for inv in invader:
+            inv.y += 10
+    elif hit_left_edge:
+        left, right = False, True
+        for inv in invader:
+            inv.y += 10
+
+    for inv in invader:
+        if right:
+            inv.move(5)
+        elif left:
+            inv.move(-5)
+        inv.draw(screen, 20, 20)
+    
     pygame.display.flip()
-    clock.tick(60)
+    clock.tick(30)
+while not running:
+        screen.fill("black")
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = True
+        screen.blit(text_2, (300, 300))
+        pygame.display.flip()
 
 pygame.quit()
