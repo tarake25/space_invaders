@@ -44,12 +44,15 @@ class player_class(game_ob):
             self.b_list[i].draw(screen,5,5)
             for j in range(len(inv_list)):
                 if self.b_list[i].hit(inv_list[j]):
-                    inv_list[j].x += 100000
-                    self.b_list[i].x+= 100000
+                    inv_list[j].y += 100000
+                    self.b_list[i].y+= 100000
     def game_over(self,list_inv):
         for inv in list_inv:
             if math.sqrt((self.x - inv.x)**2 + (self.y - inv.y)**2) == 10:
                 return True
+            elif inv.y == HIGHT :
+                return True
+
 
         
 
@@ -58,14 +61,8 @@ class inv(game_ob):
         super().__init__(x, y)
     def move(self, speed):
         self.x += speed
-
-
-
-
-
-        
+    
 left,right = False,True
-
 
 invader = []
 for i in range(100,700,40):
@@ -82,10 +79,14 @@ clock = pygame.time.Clock()
 running = True
 player = player_class(WIDTH/2-40,HIGHT-40)
 while running :
+    SCORE = []
+    for i in invader:
+        if i.y >= 100000:
+            SCORE.append(i)
 
     screen.fill("black")
-    text_surface = font.render(f"Remanig invaders is : {len(invader)}", True, (255, 255, 255)) 
-    screen.blit(text_surface, (10, 10))
+    text_surface = font.render(f"Remaining invaders: {len(invader) - len(SCORE)}", True, (255, 255, 255))
+    screen.blit(text_surface, (5, 5))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -93,7 +94,6 @@ while running :
         elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_SPACE:
                     player.b_list.append(bolit(player.x + 20,player.y))
-    
     
  
 
